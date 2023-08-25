@@ -1,5 +1,6 @@
 from cashflower import variable
 from input import assumption, main
+from settings import settings
 
 
 @variable()
@@ -16,9 +17,11 @@ def claims(t):
 def commissions(t):
     return premiums(t) if duration(t) == 0 else 0
 
+
 def discount(t):
     rate = assumption["disc_rate_ann"].loc[duration(t)]["zero_spot"]
     return (1 + rate)**(-t/12)
+
 
 @variable()
 def duration(t):
@@ -58,13 +61,13 @@ def mort_rate_mth(t):
 @variable()
 def net_cf(t):
     return premiums(t) - claims(t) - expenses(t) - commissions(t)
-#
-#
-# @variable()
-# def net_premium_pp():
-#     return pv_claims() / pv_pols_if()
-#
-#
+
+
+@variable()
+def net_premium_pp():
+    return pv_claims(0) / pv_pols_if(0)
+
+
 @variable()
 def pols_death(t):
     return pols_if(t) * mort_rate_mth(t)
@@ -103,32 +106,41 @@ def premiums(t):
     return premium_pp() * pols_if(t)
 
 
-# TODO shoould be time-dependent
 @variable()
-def pv_claims():
-    return sum(claims(t) * discount(t) for t in range(settings["T_MAX_CALCULATION"]))
+def pv_claims(t):
+    if t == settings["T_MAX_CALCULATION"]:
+        return claims(t) * discount(t)
+    return claims(t) * discount(t) + pv_claims(t+1)
 
 
-# @variable()
-# def pv_commissions():
-#     return sum(list(commissions(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
-#
-#
-# @variable()
-# def pv_expenses():
-#     return sum(list(expenses(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
-#
-#
-# @variable()
-# def pv_net_cf():
-#     return pv_premiums() - pv_claims() - pv_expenses() - pv_commissions()
-#
-#
-# @variable()
-# def pv_pols_if():
-#     return sum(list(pols_if(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
-#
-#
-# @variable()
-# def pv_premiums():
-#     return sum(list(premiums(t) for t in range(proj_len())) * disc_factors()[:proj_len()])
+@variable()
+def pv_commissions(t):
+    if t == settings["T_MAX_CALCULATION"]:
+        return commissions(t) * discount(t)
+    return commissions(t) * discount(t) + pv_commissions(t+1)
+
+
+@variable()
+def pv_expenses(t):
+    if t == settings["T_MAX_CALCULATION"]:
+        return expenses(t) * discount(t)
+    return expenses(t) * discount(t) + pv_expenses(t+1)
+
+
+@variable()
+def pv_premiums(t):
+    if t == settings["T_MAX_CALCULATION"]:
+        return premiums(t) * discount(t)
+    return premiums(t) * discount(t) + pv_premiums(t+1)
+
+
+@variable()
+def pv_pols_if(t):
+    if t == settings["T_MAX_CALCULATION"]:
+        return pols_if(t) * discount(t)
+    return pols_if(t) * discount(t) + pv_pols_if(t+1)
+
+
+@variable()
+def pv_net_cf(t):
+    return pv_premiums(t) - pv_claims(t) - pv_expenses(t) - pv_commissions(t)

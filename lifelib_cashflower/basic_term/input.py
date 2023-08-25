@@ -4,7 +4,7 @@ from cashflower import Runplan, ModelPointSet
 
 runplan = Runplan(data=pd.DataFrame({"version": [1]}))
 
-main = ModelPointSet(data=pd.read_csv("input/model_point_table_1pol.csv"))
+main = ModelPointSet(data=pd.read_csv("input/model_point_table.csv"))
 
 assumption = {
     "disc_rate_ann": pd.read_csv("input/disc_rate_ann.csv", index_col="year"),
