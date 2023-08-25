@@ -9,6 +9,11 @@ def age(t):
 
 
 @variable()
+def sum_assured():
+    return main.get("sum_assured")
+
+
+@variable()
 def claims(t):
     return main.get("sum_assured") * pols_death(t)
 
@@ -18,6 +23,7 @@ def commissions(t):
     return premiums(t) if duration(t) == 0 else 0
 
 
+@variable()
 def discount(t):
     rate = assumption["disc_rate_ann"].loc[duration(t)]["zero_spot"]
     return (1 + rate)**(-t/12)
@@ -50,6 +56,8 @@ def lapse_rate(t):
 
 @variable()
 def mort_rate(t):
+    if t > 0 and age(t-1) == age(t) and duration(t-1) == duration(t):
+        return mort_rate(t-1)
     return assumption["mort_table"].loc[age(t)][min(duration(t), 5)]
 
 
