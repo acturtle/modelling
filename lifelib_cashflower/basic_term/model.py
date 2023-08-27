@@ -24,9 +24,15 @@ def commissions(t):
 
 
 @variable()
+def discount_ann(t):
+    if t > 0 and duration(t-1) == duration(t):
+        return discount_ann(t-1)
+    return assumption["disc_rate_ann"].loc[duration(t)]["zero_spot"]
+
+
+@variable()
 def discount(t):
-    rate = assumption["disc_rate_ann"].loc[duration(t)]["zero_spot"]
-    return (1 + rate)**(-t/12)
+    return (1 + discount_ann(t))**(-t/12)
 
 
 @variable()
