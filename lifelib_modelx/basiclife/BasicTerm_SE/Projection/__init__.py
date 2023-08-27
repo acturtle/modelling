@@ -498,7 +498,8 @@ def mort_rate(t):
        * :func:`mort_rate_mth`
 
     """
-    return mort_table[str(max(min(5, duration(t)),0))][age(t)]
+    age_t = max(min(age(t), 120), 18)
+    return mort_table[str(max(min(5, duration(t)),0))][age_t]
 
 
 def mort_rate_mth(t):

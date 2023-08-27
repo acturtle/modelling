@@ -1,5 +1,0 @@
-﻿spec_id,premium_type,has_surr_charge,surr_charge_id,load_prem_rate,is_wl
-A,SINGLE,FAŁSZ,,0.1,FAŁSZ
-B,SINGLE,PRAWDA,type_1,0,FAŁSZ
-C,LEVEL,FAŁSZ,,0.1,PRAWDA
-D,LEVEL,PRAWDA,type_3,0.05,PRAWDA
