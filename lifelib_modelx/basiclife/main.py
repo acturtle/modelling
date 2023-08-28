@@ -4,7 +4,7 @@ import time
 import pandas as pd
 
 # User settings
-APPROACH = 2
+APPROACH = 1
 MODEL = "BasicTerm_SE"
 
 proj = mx.read_model(MODEL).Projection
@@ -13,7 +13,7 @@ timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
 if APPROACH == 1:
     # One policy
-    proj.point_id = 581
+    proj.point_id = 5686
     horizon = [*range(720)]
     result = pd.DataFrame({
         "t": [t for t in horizon],

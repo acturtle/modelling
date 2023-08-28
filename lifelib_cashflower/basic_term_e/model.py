@@ -114,7 +114,7 @@ def pols_if_at_bef_mat(t):
     if t == 0:
         return pols_if_init()
     else:
-        return pols_if_at_bef_mat(t-1) - pols_lapse(t-1) - pols_death(t-1)
+        return pols_if_at_bef_decr(t-1) - pols_lapse(t-1) - pols_death(t-1)
 
 
 @variable()
@@ -158,8 +158,7 @@ def pols_new_biz(t):
 
 @variable()
 def premium_pp():
-    premium_rate = assumption["premium_table"].loc[(main.get("age_at_entry"), main.get("policy_term"))]["premium_rate"]
-    return round(main.get("sum_assured") * premium_rate, 2)
+    return round(main.get("sum_assured") * assumption["premium_table"].loc[(main.get("age_at_entry"), main.get("policy_term"))]["premium_rate"], 2)
 
 
 @variable()
