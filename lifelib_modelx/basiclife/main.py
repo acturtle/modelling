@@ -4,7 +4,7 @@ import time
 import pandas as pd
 
 # User settings
-APPROACH = 1
+APPROACH = 2
 MODEL = "BasicTerm_SE"
 
 proj = mx.read_model(MODEL).Projection

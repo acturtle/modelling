@@ -34,7 +34,7 @@ def commissions(t):
 def discount_ann(t):
     if t > 0 and (t-1)//12 == t//12:
         return discount_ann(t-1)
-    return assumption["disc_rate_ann"].loc[t//12]["zero_spot"]
+    return float(assumption["disc_rate_ann"].get_value(str(t//12), "zero_spot"))
 
 
 @variable()
@@ -78,8 +78,9 @@ def lapse_rate(t):
 def mort_rate(t):
     if t > 0 and age(t-1) == age(t) and (duration(t-1) == duration(t) or duration(t) > 5):
         return mort_rate(t-1)
-    age_t = max(min(age(t), 120), 18)
-    return assumption["mort_table"].loc[age_t][min(duration(t), 5)]
+    age_t = str(max(min(age(t), 120), 18))
+    duration_t = str(max(min(duration(t), 5), 0))
+    return float(assumption["mort_table"].get_value(age_t, duration_t))
 
 
 @variable()
@@ -158,7 +159,9 @@ def pols_new_biz(t):
 
 @variable()
 def premium_pp():
-    return round(main.get("sum_assured") * assumption["premium_table"].loc[(main.get("age_at_entry"), main.get("policy_term"))]["premium_rate"], 2)
+    premium_rate = float(assumption["premium_table"].get_value((str(main.get("age_at_entry")),
+                                                                str(main.get("policy_term"))), "premium_rate"))
+    return round(main.get("sum_assured") * premium_rate, 2)
 
 
 @variable()

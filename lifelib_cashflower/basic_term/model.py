@@ -27,7 +27,7 @@ def commissions(t):
 def discount_ann(t):
     if t > 0 and duration(t-1) == duration(t):
         return discount_ann(t-1)
-    return assumption["disc_rate_ann"].loc[duration(t)]["zero_spot"]
+    return float(assumption["disc_rate_ann"].get_value(str(duration(t)), "zero_spot"))
 
 
 @variable()
@@ -64,7 +64,7 @@ def lapse_rate(t):
 def mort_rate(t):
     if t > 0 and age(t-1) == age(t) and duration(t-1) == duration(t):
         return mort_rate(t-1)
-    return assumption["mort_table"].loc[age(t)][min(duration(t), 5)]
+    return float(assumption["mort_table"].get_value(str(age(t)), str(min(duration(t), 5))))
 
 
 @variable()
