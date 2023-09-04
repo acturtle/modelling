@@ -4,7 +4,7 @@ import time
 import pandas as pd
 
 # User settings
-APPROACH = 2
+APPROACH = 1
 MODEL = "CashValue_SE"
 
 proj = mx.read_model(MODEL).Projection
@@ -13,10 +13,18 @@ timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
 if APPROACH == 1:
     # One policy
-    proj.point_id = 1
+    proj.point_id = 3
     horizon = [*range(720)]
     result = pd.DataFrame({
         "t": [t for t in horizon],
+        "inv_return_mth": [proj.inv_return_mth(t) for t in horizon],
+        "premiums": [proj.premiums(t) for t in horizon],
+        "inv_income": [proj.inv_income(t) for t in horizon],
+        "claims": [proj.claims(t) for t in horizon],
+        "expenses": [proj.expenses(t) for t in horizon],
+        "commissions": [proj.commissions(t) for t in horizon],
+        "av_change": [proj.av_change(t) for t in horizon],
+        "pv_net_cf": [proj.pv_net_cf() for t in horizon],
     })
 else:
     # Full portfolio
