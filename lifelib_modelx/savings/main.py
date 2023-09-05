@@ -4,7 +4,7 @@ import time
 import pandas as pd
 
 # User settings
-APPROACH = 1
+APPROACH = 2
 MODEL = "CashValue_SE"
 
 proj = mx.read_model(MODEL).Projection
@@ -31,7 +31,7 @@ else:
     print("Start =",  time.strftime("%H:%M:%S", time.localtime()))
     beg = time.time()
 
-    N = 4
+    N = 100_000
     pv_net_cf = [None for _ in range(N)]
     for i in range(1, N+1):
         # Full portfolio

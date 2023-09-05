@@ -139,7 +139,7 @@ def commissions(t):
 def discount_ann(t):
     if t > 0 and (t-1)//12 == t//12:
         return discount_ann(t-1)
-    return assumption["disc_rate_ann"].loc[t//12]["zero_spot"]
+    return float(assumption["disc_rate_ann"].get_value(str(t // 12), "zero_spot"))
 
 
 @variable()
@@ -161,18 +161,9 @@ def duration_mth(t):
 
 
 @variable()
-def expense_acq():
-    return assumption["expense_acq"]
-
-
-@variable()
-def expense_maint():
-    return assumption["expense_maint"]
-
-
-@variable()
 def expenses(t):
-    return expense_acq() * pols_new_biz(t) + pols_if_at_bef_decr(t) * expense_maint()/12 * inflation_factor(t)
+    return (assumption["expense_acq"] * pols_new_biz(t) +
+            pols_if_at_bef_decr(t) * assumption["expense_maint"]/12 * inflation_factor(t))
 
 
 @variable()
@@ -223,11 +214,8 @@ def maint_fee_pp(t):
 
 @variable()
 def margin_expense(t):
-    return (main.get("load_prem_rate") * premium_pp(t) * pols_if_at_bef_decr(t)
-            + surr_charge(t)
-            + maint_fee(t)
-            - commissions(t)
-            - expenses(t))
+    return (main.get("load_prem_rate") * premium_pp(t) * pols_if_at_bef_decr(t) + surr_charge(t) + maint_fee(t)
+            - commissions(t)) - expenses(t)
 
 
 @variable()
@@ -239,9 +227,9 @@ def margin_mortality(t):
 def mort_rate(t):
     if t > 0 and age(t-1) == age(t) and (duration(t-1) == duration(t) or duration(t) > 5):
         return mort_rate(t-1)
-    age_t = max(min(age(t), 120), 18)
-    duration_t = max(min(duration(t), 5), 0)
-    return assumption["mort_table"].loc[age_t][duration_t]
+    age_t = str(max(min(age(t), 120), 18))
+    duration_t = str(max(min(duration(t), 5), 0))
+    return float(assumption["mort_table"].get_value(age_t, duration_t))
 
 
 @variable()
@@ -251,12 +239,7 @@ def mort_rate_mth(t):
 
 @variable()
 def mort_table_last_age():
-    for i in assumption["mort_table"].index:
-        mort_i = assumption["mort_table"].loc[i]
-        if (mort_i == 1).all():
-            return i
-
-    return i
+    return 120
 
 
 @variable()
@@ -403,12 +386,7 @@ def pv_inv_income(t):
 
 @variable()
 def pv_net_cf(t):
-    return (pv_premiums(t)
-            + pv_inv_income(t)
-            - pv_claims(t)
-            - pv_expenses(t)
-            - pv_commissions(t)
-            - pv_av_change(t))
+    return pv_premiums(t) + pv_inv_income(t) - pv_claims(t) - pv_expenses(t) - pv_commissions(t) - pv_av_change(t)
 
 
 @variable()
@@ -436,6 +414,6 @@ def surr_charge_rate(t):
         if duration(t) > 10:
             return surr_charge_rate(t-1)
         else:
-            return assumption["surr_charge_table"].loc[duration(t)][main.get("surr_charge_id")]
+            return float(assumption["surr_charge_table"].get_value(str(duration(t)), main.get("surr_charge_id")))
     else:
         return 0
