@@ -1,4 +1,5 @@
 import math
+import numpy as np
 
 from cashflower import variable
 from input import assumption, main, runplan
@@ -10,24 +11,24 @@ def proj_len():
     return max(12 * policy_term() - duration_mth(0) + 1, 0)
 
 
-@variable()
-def age(t):
-    return main.get("age_at_entry") + duration(t)
+@variable(array=True)
+def age():
+    return main.get("age_at_entry") + duration()
 
 
-@variable()
-def av_at_bef_mat(t):
-    return av_pp_at_bef_prem(t) * pols_if_at_bef_mat(t)
+@variable(array=True)
+def av_at_bef_mat():
+    return av_pp_at_bef_prem() * pols_if_at_bef_mat()
 
 
-@variable()
-def av_at_bef_nb(t):
-    return av_pp_at_bef_prem(t) * pols_if_at_bef_nb(t)
+@variable(array=True)
+def av_at_bef_nb():
+    return av_pp_at_bef_prem() * pols_if_at_bef_nb()
 
 
-@variable()
-def av_at_bef_fee(t):
-    return av_pp_at_bef_fee(t) * pols_if_at_bef_decr(t)
+@variable(array=True)
+def av_at_bef_fee():
+    return av_pp_at_bef_fee() * pols_if_at_bef_decr()
 
 
 @variable()
@@ -55,74 +56,74 @@ def av_pp_at_bef_inv(t):
     return av_pp_at_bef_fee(t) - maint_fee_pp(t) - coi_pp(t)
 
 
-@variable()
-def av_pp_at_mid_mth(t):
-    return av_pp_at_bef_inv(t) + 0.5 * inv_income_pp(t)
+@variable(array=True)
+def av_pp_at_mid_mth():
+    return av_pp_at_bef_inv() + 0.5 * inv_income_pp()
 
 
-@variable()
-def claim_pp_death(t):
-    return max(main.get("sum_assured"), av_pp_at_mid_mth(t))
+@variable(array=True)
+def claim_pp_death():
+    return np.maximum(main.get("sum_assured"), av_pp_at_mid_mth())
 
 
-@variable()
-def claim_pp_lapse(t):
-    return av_pp_at_mid_mth(t)
+@variable(array=True)
+def claim_pp_lapse():
+    return av_pp_at_mid_mth()
 
 
-@variable()
-def claim_pp_maturity(t):
-    return av_pp_at_bef_prem(t)
+@variable(array=True)
+def claim_pp_maturity():
+    return av_pp_at_bef_prem()
 
 
-@variable()
-def claims_death(t):
-    return claim_pp_death(t) * pols_death(t)
+@variable(array=True)
+def claims_death():
+    return claim_pp_death() * pols_death()
 
 
-@variable()
-def claims_lapse(t):
-    return claims_from_av_lapse(t) - surr_charge(t)
+@variable(array=True)
+def claims_lapse():
+    return claims_from_av_lapse() - surr_charge()
 
 
-@variable()
-def claims_maturity(t):
-    return claims_from_av_maturity(t)
+@variable(array=True)
+def claims_maturity():
+    return claims_from_av_maturity()
 
 
-@variable()
-def claims(t):
-    return claims_death(t) + claims_lapse(t) + claims_maturity(t)
+@variable(array=True)
+def claims():
+    return claims_death() + claims_lapse() + claims_maturity()
 
 
-@variable()
-def claims_from_av_death(t):
-    return av_pp_at_mid_mth(t) * pols_death(t)
+@variable(array=True)
+def claims_from_av_death():
+    return av_pp_at_mid_mth() * pols_death()
 
 
-@variable()
-def claims_from_av_lapse(t):
-    return av_pp_at_mid_mth(t) * pols_lapse(t)
+@variable(array=True)
+def claims_from_av_lapse():
+    return av_pp_at_mid_mth() * pols_lapse()
 
 
-@variable()
-def claims_from_av_maturity(t):
-    return av_pp_at_bef_prem(t) * pols_maturity(t)
+@variable(array=True)
+def claims_from_av_maturity():
+    return av_pp_at_bef_prem() * pols_maturity()
 
 
-@variable()
-def claims_over_av(t):
-    return (claim_pp_death(t) - av_pp_at_mid_mth(t)) * pols_death(t)
+@variable(array=True)
+def claims_over_av():
+    return (claim_pp_death() - av_pp_at_mid_mth()) * pols_death()
 
 
-@variable()
-def coi(t):
-    return coi_pp(t) * pols_if_at_bef_decr(t)
+@variable(array=True)
+def coi():
+    return coi_pp() * pols_if_at_bef_decr()
 
 
-@variable()
-def coi_rate(t):
-    return 1.1 * mort_rate_mth(t)
+@variable(array=True)
+def coi_rate():
+    return 1.1 * mort_rate_mth()
 
 
 @variable()
@@ -130,9 +131,9 @@ def coi_pp(t):
     return coi_rate(t) * net_amt_at_risk(t)
 
 
-@variable()
-def commissions(t):
-    return 0.05 * premiums(t)
+@variable(array=True)
+def commissions():
+    return 0.05 * premiums()
 
 
 @variable()
@@ -143,13 +144,13 @@ def discount_ann(t):
 
 
 @variable()
-def discount(t):
+def discount_rate(t):
     return (1 + discount_ann(t))**(-t/12)
 
 
-@variable()
-def duration(t):
-    return duration_mth(t) // 12
+@variable(array=True)
+def duration():
+    return duration_mth() // 12
 
 
 @variable()
@@ -160,10 +161,9 @@ def duration_mth(t):
         return duration_mth(t-1) + 1
 
 
-@variable()
-def expenses(t):
-    return (assumption["expense_acq"] * pols_new_biz(t) +
-            pols_if_at_bef_decr(t) * assumption["expense_maint"]/12 * inflation_factor(t))
+@variable(array=True)
+def expenses():
+    return pols_new_biz() * assumption["expense_acq"] + pols_if_at_bef_decr() * assumption["expense_maint"]/12 * inflation_factor()
 
 
 @variable()
@@ -192,14 +192,14 @@ def inv_return_mth(t):
     return math.exp((mu - 0.5 * sigma ** 2) * dt + sigma * dt ** 0.5 * std_norm_rand) - 1
 
 
-@variable()
-def lapse_rate(t):
-    return max(0.1 - 0.02 * duration(t), 0.02)
+@variable(array=True)
+def lapse_rate():
+    return np.maximum(0.1 - 0.02 * duration(), 0.02)
 
 
-@variable()
-def maint_fee(t):
-    return maint_fee_pp(t) * pols_if_at_bef_decr(t)
+@variable(array=True)
+def maint_fee():
+    return maint_fee_pp() * pols_if_at_bef_decr()
 
 
 @variable()
@@ -212,34 +212,28 @@ def maint_fee_pp(t):
     return maint_fee_rate() * av_pp_at_bef_fee(t)
 
 
-@variable()
-def margin_expense(t):
-    return (main.get("load_prem_rate") * premium_pp(t) * pols_if_at_bef_decr(t) + surr_charge(t) + maint_fee(t)
-            - commissions(t)) - expenses(t)
+@variable(array=True)
+def margin_expense():
+    return main.get("load_prem_rate") * premium_pp() * pols_if_at_bef_decr() + surr_charge() + maint_fee() - commissions() - expenses()
 
 
-@variable()
-def margin_mortality(t):
-    return coi(t) - claims_over_av(t)
+@variable(array=True)
+def margin_mortality():
+    return coi() - claims_over_av()
 
 
 @variable()
 def mort_rate(t):
     if t > 0 and age(t-1) == age(t) and (duration(t-1) == duration(t) or duration(t) > 5):
         return mort_rate(t-1)
-    age_t = str(max(min(age(t), 120), 18))
-    duration_t = str(max(min(duration(t), 5), 0))
+    age_t = str(int(max(min(age(t), 120), 18)))
+    duration_t = str(int(max(min(duration(t), 5), 0)))
     return float(assumption["mort_table"].get_value(age_t, duration_t))
 
 
 @variable()
 def mort_rate_mth(t):
     return 1 - (1-mort_rate(t))**(1/12)
-
-
-@variable()
-def mort_table_last_age():
-    return 120
 
 
 @variable()
@@ -258,7 +252,7 @@ def net_cf(t):
 @variable()
 def policy_term():
     if main.get("is_wl"):
-        return mort_table_last_age() - main.get("age_at_entry")
+        return assumption["mort_table_last_age"] - main.get("age_at_entry")
     else:
         return main.get("policy_term")
 
@@ -268,9 +262,9 @@ def pols_death(t):
     return pols_if_at_bef_decr(t) * mort_rate_mth(t)
 
 
-@variable()
-def pols_if(t):
-    return pols_if_at_bef_mat(t)
+@variable(array=True)
+def pols_if():
+    return pols_if_at_bef_mat()
 
 
 @variable()
@@ -301,7 +295,7 @@ def pols_if_init():
 
 @variable()
 def pols_lapse(t):
-    return (pols_if_at_bef_decr(t) - pols_death(t)) * (1-(1 - lapse_rate(t))**(1/12))
+    return (pols_if_at_bef_decr(t) - pols_death(t)) * (1 - (1-lapse_rate(t))**(1/12))
 
 
 @variable()
@@ -320,14 +314,14 @@ def pols_new_biz(t):
         return 0
 
 
-@variable()
-def prem_to_av(t):
-    return prem_to_av_pp(t) * pols_if_at_bef_decr(t)
+@variable(array=True)
+def prem_to_av():
+    return prem_to_av_pp() * pols_if_at_bef_decr()
 
 
-@variable()
-def prem_to_av_pp(t):
-    return (1 - main.get("load_prem_rate")) * premium_pp(t)
+@variable(array=True)
+def prem_to_av_pp():
+    return (1 - main.get("load_prem_rate")) * premium_pp()
 
 
 @variable()
@@ -344,68 +338,68 @@ def premium_pp(t):
             return 0
 
 
-@variable()
-def premiums(t):
-    return premium_pp(t) * pols_if_at_bef_decr(t)
+@variable(array=True)
+def premiums():
+    return premium_pp() * pols_if_at_bef_decr()
 
 
 @variable()
 def pv_av_change(t):
     if t == settings["T_MAX_CALCULATION"]:
-        return av_change(t) * discount(t)
-    return av_change(t) * discount(t) + pv_av_change(t+1)
+        return av_change(t) * discount_rate(t)
+    return av_change(t) + pv_av_change(t+1) * discount_rate(t)
 
 
 @variable()
 def pv_claims(t):
     if t == settings["T_MAX_CALCULATION"]:
-        return claims(t) * discount(t)
-    return claims(t) * discount(t) + pv_claims(t+1)
+        return claims(t) * discount_rate(t)
+    return claims(t) + pv_claims(t+1) * discount_rate(t)
 
 
 @variable()
 def pv_commissions(t):
     if t == settings["T_MAX_CALCULATION"]:
-        return commissions(t) * discount(t)
-    return commissions(t) * discount(t) + pv_commissions(t+1)
+        return commissions(t) * discount_rate(t)
+    return commissions(t) + pv_commissions(t+1) * discount_rate(t)
 
 
 @variable()
 def pv_expenses(t):
     if t == settings["T_MAX_CALCULATION"]:
-        return expenses(t) * discount(t)
-    return expenses(t) * discount(t) + pv_expenses(t+1)
+        return expenses(t) * discount_rate(t)
+    return expenses(t) + pv_expenses(t+1) * discount_rate(t)
 
 
 @variable()
 def pv_inv_income(t):
     if t == settings["T_MAX_CALCULATION"]:
-        return inv_income(t) * discount(t)
-    return inv_income(t) * discount(t) + pv_inv_income(t+1)
+        return inv_income(t) * discount_rate(t)
+    return inv_income(t) + pv_inv_income(t+1) * discount_rate(t)
 
 
-@variable()
-def pv_net_cf(t):
-    return pv_premiums(t) + pv_inv_income(t) - pv_claims(t) - pv_expenses(t) - pv_commissions(t) - pv_av_change(t)
+@variable(array=True)
+def pv_net_cf():
+    return pv_premiums() + pv_inv_income() - pv_claims() - pv_expenses() - pv_commissions() - pv_av_change()
 
 
 @variable()
 def pv_pols_if(t):
     if t == settings["T_MAX_CALCULATION"]:
-        return pols_if(t) * discount(t)
-    return pols_if(t) * discount(t) + pv_pols_if(t+1)
+        return pols_if(t) * discount_rate(t)
+    return pols_if(t) + pv_pols_if(t+1) * discount_rate(t)
 
 
 @variable()
 def pv_premiums(t):
     if t == settings["T_MAX_CALCULATION"]:
-        return premiums(t) * discount(t)
-    return premiums(t) * discount(t) + pv_premiums(t+1)
+        return premiums(t) * discount_rate(t)
+    return premiums(t) + pv_premiums(t+1) * discount_rate(t)
 
 
-@variable()
-def surr_charge(t):
-    return surr_charge_rate(t) * av_pp_at_mid_mth(t) * pols_lapse(t)
+@variable(array=True)
+def surr_charge():
+    return surr_charge_rate() * av_pp_at_mid_mth() * pols_lapse()
 
 
 @variable()
@@ -414,6 +408,6 @@ def surr_charge_rate(t):
         if duration(t) > 10:
             return surr_charge_rate(t-1)
         else:
-            return float(assumption["surr_charge_table"].get_value(str(duration(t)), main.get("surr_charge_id")))
+            return float(assumption["surr_charge_table"].get_value(str(int(duration(t))), main.get("surr_charge_id")))
     else:
         return 0

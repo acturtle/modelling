@@ -6,6 +6,6 @@ from settings import settings
 
 if __name__ == "__main__":
     beg = time.time()
-    output = start("savings", settings, sys.argv)
+    output = start(settings, sys.argv)
     fin = time.time()
     print("Elapsed seconds =", fin-beg)

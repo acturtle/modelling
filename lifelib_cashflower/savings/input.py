@@ -11,6 +11,7 @@ runplan = Runplan(data=pd.DataFrame({
 model_point_table = pd.read_csv("input/model_point_table_100K.csv")
 product_spec_table = pd.read_csv("input/product_spec_table.csv")
 main_data = model_point_table.merge(product_spec_table, on="spec_id", how="left")
+main_data = main_data.iloc[:100]
 main = ModelPointSet(data=main_data)
 
 assumption = {
@@ -21,4 +22,5 @@ assumption = {
     "expense_acq": 5000,
     "expense_maint": 500,
     "inflation_rate": 0.01,
+    "mort_table_last_age": 120,
 }
