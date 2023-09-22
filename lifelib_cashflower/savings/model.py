@@ -5,6 +5,8 @@ from cashflower import variable
 from input import assumption, main, runplan
 from settings import settings
 
+from discount import discount
+
 
 @variable()
 def proj_len():
@@ -343,39 +345,29 @@ def premiums():
     return premium_pp() * pols_if_at_bef_decr()
 
 
-@variable()
-def pv_av_change(t):
-    if t == settings["T_MAX_CALCULATION"]:
-        return av_change(t) * discount_rate(t)
-    return av_change(t) + pv_av_change(t+1) * discount_rate(t)
+@variable(array=True)
+def pv_av_change():
+    return discount(av_change(), discount_rate())
 
 
-@variable()
-def pv_claims(t):
-    if t == settings["T_MAX_CALCULATION"]:
-        return claims(t) * discount_rate(t)
-    return claims(t) + pv_claims(t+1) * discount_rate(t)
+@variable(array=True)
+def pv_claims():
+    return discount(claims(), discount_rate())
 
 
-@variable()
-def pv_commissions(t):
-    if t == settings["T_MAX_CALCULATION"]:
-        return commissions(t) * discount_rate(t)
-    return commissions(t) + pv_commissions(t+1) * discount_rate(t)
+@variable(array=True)
+def pv_commissions():
+    return discount(commissions(), discount_rate())
 
 
-@variable()
-def pv_expenses(t):
-    if t == settings["T_MAX_CALCULATION"]:
-        return expenses(t) * discount_rate(t)
-    return expenses(t) + pv_expenses(t+1) * discount_rate(t)
+@variable(array=True)
+def pv_expenses():
+    return discount(expenses(), discount_rate())
 
 
-@variable()
-def pv_inv_income(t):
-    if t == settings["T_MAX_CALCULATION"]:
-        return inv_income(t) * discount_rate(t)
-    return inv_income(t) + pv_inv_income(t+1) * discount_rate(t)
+@variable(array=True)
+def pv_inv_income():
+    return discount(inv_income(), discount_rate())
 
 
 @variable(array=True)
@@ -383,18 +375,14 @@ def pv_net_cf():
     return pv_premiums() + pv_inv_income() - pv_claims() - pv_expenses() - pv_commissions() - pv_av_change()
 
 
-@variable()
-def pv_pols_if(t):
-    if t == settings["T_MAX_CALCULATION"]:
-        return pols_if(t) * discount_rate(t)
-    return pols_if(t) + pv_pols_if(t+1) * discount_rate(t)
+@variable(array=True)
+def pv_pols_if():
+    return discount(pols_if(), discount_rate())
 
 
-@variable()
-def pv_premiums(t):
-    if t == settings["T_MAX_CALCULATION"]:
-        return premiums(t) * discount_rate(t)
-    return premiums(t) + pv_premiums(t+1) * discount_rate(t)
+@variable(array=True)
+def pv_premiums():
+    return discount(premiums(), discount_rate())
 
 
 @variable(array=True)
