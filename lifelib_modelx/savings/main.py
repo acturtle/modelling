@@ -13,7 +13,7 @@ timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
 if APPROACH == 1:
     # One policy
-    proj.point_id = 3
+    proj.point_id = 1
     horizon = [*range(720)]
     result = pd.DataFrame({
         "t": [t for t in horizon],
@@ -24,6 +24,7 @@ if APPROACH == 1:
         "expenses": [proj.expenses(t) for t in horizon],
         "commissions": [proj.commissions(t) for t in horizon],
         "av_change": [proj.av_change(t) for t in horizon],
+        "pv_expenses": [proj.pv_expenses() for t in horizon],
         "pv_net_cf": [proj.pv_net_cf() for t in horizon],
     })
 else:
@@ -31,13 +32,13 @@ else:
     print("Start =",  time.strftime("%H:%M:%S", time.localtime()))
     beg = time.time()
 
-    N = 100_000
+    N = 10_000
     pv_net_cf = [None for _ in range(N)]
     for i in range(1, N+1):
         # Full portfolio
         proj.point_id = i
         pv_net_cf[i-1] = proj.pv_net_cf()
-        if i % 1_000 == 0:
+        if i % 100 == 0:
             print("i =", i)
 
     result = pd.DataFrame(pv_net_cf, columns=["pv_net_cf"])

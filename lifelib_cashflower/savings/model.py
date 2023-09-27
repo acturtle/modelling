@@ -1,11 +1,9 @@
 import math
 import numpy as np
 
-from cashflower import variable
+from cashflower import discount, variable
 from input import assumption, main, runplan
 from settings import settings
-
-from discount import discount
 
 
 @variable()
@@ -139,15 +137,32 @@ def commissions():
 
 
 @variable()
-def discount_ann(t):
+def yearly_spot_rate(t):
     if t > 0 and (t-1)//12 == t//12:
-        return discount_ann(t-1)
+        return yearly_spot_rate(t - 1)
     return float(assumption["disc_rate_ann"].get_value(str(t // 12), "zero_spot"))
 
 
 @variable()
-def discount_rate(t):
-    return (1 + discount_ann(t))**(-t/12)
+def monthly_spot_rate(t):
+    return (1+yearly_spot_rate(t))**(1/12)-1
+
+
+@variable()
+def monthly_forward_rate(t):
+    if t == 0:
+        return 0
+    return (1+monthly_spot_rate(t))**t / (1+monthly_spot_rate(t-1))**(t-1) - 1
+
+
+@variable()
+def forward_discount_rate(t):
+    return 1/(1+monthly_forward_rate(t))
+
+
+@variable()
+def spot_discount_rate(t):
+    return (1 + yearly_spot_rate(t))**(-t / 12)
 
 
 @variable(array=True)
@@ -347,27 +362,27 @@ def premiums():
 
 @variable(array=True)
 def pv_av_change():
-    return discount(av_change(), discount_rate())
+    return discount(av_change(), forward_discount_rate())
 
 
 @variable(array=True)
 def pv_claims():
-    return discount(claims(), discount_rate())
+    return discount(claims(), forward_discount_rate())
 
 
 @variable(array=True)
 def pv_commissions():
-    return discount(commissions(), discount_rate())
+    return discount(commissions(), forward_discount_rate())
 
 
 @variable(array=True)
 def pv_expenses():
-    return discount(expenses(), discount_rate())
+    return discount(expenses(), forward_discount_rate())
 
 
 @variable(array=True)
 def pv_inv_income():
-    return discount(inv_income(), discount_rate())
+    return discount(inv_income(), forward_discount_rate())
 
 
 @variable(array=True)
@@ -377,12 +392,12 @@ def pv_net_cf():
 
 @variable(array=True)
 def pv_pols_if():
-    return discount(pols_if(), discount_rate())
+    return discount(pols_if(), forward_discount_rate())
 
 
 @variable(array=True)
 def pv_premiums():
-    return discount(premiums(), discount_rate())
+    return discount(premiums(), forward_discount_rate())
 
 
 @variable(array=True)
