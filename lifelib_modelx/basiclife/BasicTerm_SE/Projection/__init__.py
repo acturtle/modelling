@@ -1,4 +1,4 @@
-"""The main Space in the :mod:`~basiclife.BasicTerm_SE` model.
+"""The model_point Space in the :mod:`~basiclife.BasicTerm_SE` model.
 
 :mod:`~basiclife.BasicTerm_SE.Projection` is the only Space defined
 in the :mod:`~basiclife.BasicTerm_SE` model, and it contains
@@ -268,7 +268,7 @@ def check_pv_net_cf():
 
 
 def claim_pp(t):
-    """Claim per policy
+    """Claim per model_point
 
     The claim amount per plicy. Defaults to :func:`sum_assured`.
     """
@@ -364,7 +364,7 @@ def duration_mth(t):
 
 
 def expense_acq():
-    """Acquisition expense per policy
+    """Acquisition expense per model_point
 
     ``300`` by default.
     """
@@ -372,7 +372,7 @@ def expense_acq():
 
 
 def expense_maint():
-    """Annual maintenance expense per policy
+    """Annual maintenance expense per model_point
 
     ``60`` by default.
     """
@@ -533,12 +533,12 @@ def net_cf(t):
 
 
 def net_premium_pp():
-    """Net premium per policy
+    """Net premium per model_point
 
     .. note::
        This cells is not used by default.
 
-    The net premium per policy is defined so that
+    The net premium per model_point is defined so that
     the present value of net premiums equates to the present value of
     claims::
 
@@ -554,7 +554,7 @@ def net_premium_pp():
 
 
 def policy_term():
-    """The policy term of the selected model point.
+    """The model_point term of the selected model point.
 
     The element labeled ``policy_term`` of the Series returned by
     :func:`model_point`.
@@ -667,7 +667,7 @@ def pols_lapse(t):
 def pols_maturity(t):
     """Number of maturing policies
 
-    The policy maturity occurs when
+    The model_point maturity occurs when
     :func:`duration_mth` equals 12 times :func:`policy_term`.
     The amount is equal to :func:`pols_if_at(t, "BEF_MAT")<pols_if_at>`.
 
@@ -702,9 +702,9 @@ def pols_new_biz(t):
 
 
 def premium_pp():
-    """Monthly premium per policy
+    """Monthly premium per model_point
 
-    Monthly premium amount per policy defined as::
+    Monthly premium amount per model_point defined as::
 
         round(sum_assured() * premium_table[age_at_entry(), policy_term()], 2)
 
@@ -854,7 +854,7 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of policy decrement
+    """Result table of model_point decrement
 
     .. seealso::
 

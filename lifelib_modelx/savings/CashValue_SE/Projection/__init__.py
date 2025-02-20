@@ -1,4 +1,4 @@
-"""The main Space in the :mod:`~savings.CashValue_SE` model.
+"""The model_point Space in the :mod:`~savings.CashValue_SE` model.
 
 :mod:`~savings.CashValue_SE.Projection` is the only Space defined
 in the :mod:`~savings.CashValue_SE` model, and it contains
@@ -341,7 +341,7 @@ def av_change(t):
 
 
 def av_pp_at(t, timing):
-    """Account value per policy
+    """Account value per model_point
 
     :func:`av_at(t, timing)<av_at>` calculates
     the total amount of account value at time ``t`` for the policies represented
@@ -412,10 +412,10 @@ def av_pp_at(t, timing):
 
 
 def av_pp_init():
-    """Initial account value per policy
+    """Initial account value per model_point
 
     For existing business at time ``0``, 
-    returns initial per-policy accout value read from
+    returns initial per-model_point accout value read from
     the ``av_pp_init`` column in :func:`model_point`.
     For new business, 0 should be entered in the column.
 
@@ -523,9 +523,9 @@ def check_pv_net_cf():
 
 
 def claim_pp(t, kind):
-    """Claim per policy
+    """Claim per model_point
 
-    The claim amount per policy. The second parameter
+    The claim amount per model_point. The second parameter
     is to indicate the type of the claim, and
     it takes a string, which is either ``"DEATH"``, ``"LAPSE"`` or ``"MATURITY"``.
 
@@ -703,10 +703,10 @@ def coi_rate(t):
 
 
 def coi_pp(t):
-    """Cost of insurance charges per policy
+    """Cost of insurance charges per model_point
 
-    The cost of insurance charges per policy.
-    Defined as the coi charge rate times net amount at risk per policy.
+    The cost of insurance charges per model_point.
+    Defined as the coi charge rate times net amount at risk per model_point.
 
     .. seealso::
 
@@ -790,7 +790,7 @@ def duration_mth(t):
 
 
 def expense_acq():
-    """Acquisition expense per policy
+    """Acquisition expense per model_point
 
     ``5000`` by default.
     """
@@ -798,7 +798,7 @@ def expense_acq():
 
 
 def expense_maint():
-    """Annual maintenance expense per policy
+    """Annual maintenance expense per model_point
 
     ``500`` by default.
     """
@@ -891,7 +891,7 @@ def inv_income(t):
 
 
 def inv_income_pp(t):
-    """Investment income on account value per policy
+    """Investment income on account value per model_point
 
     Investment income on account value defined as::
 
@@ -1028,7 +1028,7 @@ def maint_fee_rate():
 
 
 def maint_fee_pp(t):
-    """Maintenance fee per policy
+    """Maintenance fee per model_point
 
     .. seealso::
 
@@ -1205,9 +1205,9 @@ def mort_table_last_age():
 
 
 def net_amt_at_risk(t):
-    """Net amount at risk per policy
+    """Net amount at risk per model_point
 
-    Return sum assured net of account value per policy.
+    Return sum assured net of account value per model_point.
 
     .. seealso::
 
@@ -1241,7 +1241,7 @@ def net_cf(t):
 
 
 def policy_term():
-    """The policy term of the selected model point.
+    """The model_point term of the selected model point.
 
     The element labeled ``policy_term`` of the Series returned by
     :func:`model_point`.
@@ -1362,7 +1362,7 @@ def pols_lapse(t):
 def pols_maturity(t):
     """Number of maturing policies
 
-    The policy maturity occurs when
+    The model_point maturity occurs when
     :func:`duration_mth` equals 12 times :func:`policy_term`.
     The amount is equal to :func:`pols_if_at(t, "BEF_MAT")<pols_if_at>`.
 
@@ -1412,9 +1412,9 @@ def prem_to_av(t):
 
 
 def prem_to_av_pp(t):
-    """Per-policy premium portion put in the account value
+    """Per-model_point premium portion put in the account value
 
-    The amount of premium per policy net of loading, 
+    The amount of premium per model_point net of loading,
     which is put in the accoutn value.
 
     .. seealso::
@@ -1428,7 +1428,7 @@ def prem_to_av_pp(t):
 
 
 def premium_pp(t):
-    """Premium amount per policy
+    """Premium amount per model_point
 
     Single premium amount if :func:`premium_type` is ``"SINGLE"``,
     monthly premium amount if :func:`premium_type` is ``"LEVEL"``.
@@ -1652,7 +1652,7 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of policy decrement
+    """Result table of model_point decrement
 
     .. seealso::
 

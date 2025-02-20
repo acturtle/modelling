@@ -1,4 +1,4 @@
-"""The main Space in the :mod:`~assets.BasicBonds` model.
+"""The model_point Space in the :mod:`~assets.BasicBonds` model.
 
 
 

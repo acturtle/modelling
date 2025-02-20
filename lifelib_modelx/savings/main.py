@@ -12,7 +12,7 @@ pd.set_option('display.precision', 8)
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
 if APPROACH == 1:
-    # One policy
+    # One model_point
     proj.point_id = 1
     horizon = [*range(720)]
     result = pd.DataFrame({
